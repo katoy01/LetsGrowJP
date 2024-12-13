@@ -9,4 +9,6 @@
 色々作り込んでいるので楽しんでいただければ幸いです。
 
 プログラミング、素材集め： Yoshiaki Kato <br/>
-マップ設計、素材集め： Tone Nana
+マップ設計、素材集め： Tone Nana <br/>
+<br/>
+LIVE: https://katoy01.github.io/LetsGrowJP/
