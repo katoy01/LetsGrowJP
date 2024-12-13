@@ -1,6 +1,7 @@
 /**
  * GLOBAL VARIABLES
  */
+// かなり変数が多いと思いますが、各素材に一つの変数を当てはめないといけないのですごく多くなってしまいました。
 let tilesetArtwork, playerArtwork;
 let chicken_babyArt, chickenArt, cow_baby_brownArt, cow_brownArt;
 // `stage` = different states of the entire game
@@ -85,6 +86,8 @@ let disposalSound;
 let door_open, door_close;
 let bubblePop;
 
+// 各タイルの大きさを決めます
+// 同じ数字が多くて冗長に感じるかと思いますが、色々試してみたかったのでそのままにしてみました。
 // The size of each tile (32 x 32 square)
 // They are all the same now, which might seem redundant, but we were experimenting with tile sizes 
 //      and wondered if maybe we want to change it in the future, so we will leave this as is.
@@ -101,6 +104,8 @@ let kitchenOffsetX = 0 - (kitchenTileSize * 6 + kitchenTileSize / 2);
 let kitchenOffsetY = 0 - (kitchenTileSize * 2 + kitchenTileSize / 2);
 let minOffsetXKitchen, minOffsetYKitchen;
 
+// ワールド設計（マップ２つ）
+// 牧場マップ
 // The farm world 
 // made with tiles extracted from `/assets/image/global.png`
 let world = [
@@ -193,6 +198,7 @@ let world = [
     //^40th row
 ]
 
+// キッチンマップ
 // 18 x 9
 // 512 x 256
 let kitchen = [
@@ -207,7 +213,7 @@ let kitchen = [
     [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
 ]
 
-
+// 物理的に通れるタイル
 let worldNotSolid = [];
 
 for (let y = 4; y < world.length - 4; y++) {
@@ -294,7 +300,7 @@ let npcInfoAll = [
 /**
  * p5 FUNCTIONS
  */
-
+// p５jsの関数
 // Load images and sounds
 function preload() {
     tilesetArtwork = loadImage('./assets/image/global.png');
@@ -402,7 +408,7 @@ function preload() {
 
     shop_inside = loadImage('./assets/image/shop_inside.jpg');
 }
-
+// 世界を構築する最初にコールされる関数
 // Create canvas, build world and overlay,
 // create player, create animals
 function setup() {
@@ -496,6 +502,8 @@ function setup() {
     ];
 }
 
+// マウスクリックトリガー
+// 使用：種まき、ゲームスタート、料理決定
 // Triggers when you click mouse to start game and 
 // when you are planting a seed
 function mouseClicked() {
@@ -529,6 +537,8 @@ function mouseClicked() {
 
 }
 
+// キートリガー
+// 使用キー：enter, 数字1-7, esc
 // Triggers when you press `enter` key when you are in the game,
 // or when you press numbers 1-7, or `esc` key when you are in inventory screen
 function keyPressed() {
@@ -588,6 +598,7 @@ function keyPressed() {
     }
 }
 
+// マップ変更（牧場とキッチン）
 function changeStage() {
     if (stage === 1) {
         stage = 3;
@@ -617,7 +628,7 @@ function changeStage1() {
     }
 }
 
-
+// ステージキー：スタート（stage＝0）ゲームプレイ（stage=1）インベントリ（stage=2）キッチン（stage=3）ショップ（stage=4）
 // Has start screen (stage = 0), game screen (stage = 1), and inventory screen (stage = 2) and kitchen (stage = 3) and shop (stage = 4)
 // Displays world, overlay, player, animals, and any plants that were planted and are growing
 function draw() {
@@ -723,16 +734,6 @@ function draw() {
             showMenu();
         }
 
-        // imageMode(CORNER);
-        // image(kitchenArtWork, 0, 0);
-        // let imgID = 0;
-        // for (let y = 0; y < kitchenArtWork.height / worldTileSize; y++) {
-        //     for (let x = 0; x < kitchenArtWork.width / worldTileSize; x++) {
-        //         textAlign(CENTER);
-        //         text(imgID, x * worldTileSize + worldTileSize / 2, y * worldTileSize + worldTileSize / 2);
-        //         imgID++;
-        //     }
-        // }
     }
     if (stage === 4) {
         background(113, 143, 63);
@@ -752,7 +753,7 @@ function draw() {
             text("you want to select", 198, height / 6 + 10);
             text("Press `esc` to leave", 199, height / 6 + +35);
         }
-        //fill(255);
+
     }
 }
 
@@ -760,7 +761,7 @@ function draw() {
 /**
  * HELPER FUNCTIONS
  */
-
+// 補足関数
 // Draw the entire world using the 2D array above
 function drawWorld() {
     for (let y = 0; y < world.length; y++) {
@@ -833,9 +834,7 @@ function drawKitchen() {
                 drawTile(chair_left, 0, chair_left.width, chair_left.height,
                     x * kitchenTileSize, y * kitchenTileSize, kitchenTileSize, kitchenTileSize);
             }
-            // textAlign(CENTER);
-            // textSize(10);
-            // text(x + ',' + y, x * kitchenTileSize + kitchenTileSize / 2, y * kitchenTileSize + kitchenTileSize / 2)
+
         }
     }
 }
@@ -964,6 +963,8 @@ function setOverlayAtPositionArr(id, arrayX, arrayY) {
     }
 }
 
+// タイルをパラメーターとして入れる関数
+// 物理的に通ってはいけないブロック（プレイヤー＆NPC）かをtrue or falseで出力する
 // Returns true if solid tile, false if not solid
 function isSolid(id) {
     // return true for all solid tiles
@@ -1012,6 +1013,8 @@ function isSolidKitchen(id) {
     return false;
 }
 
+// パラメーターのタイルに動物、NPC、お客さんがいるかを出力する
+// 補足：関数noAnimals()は動物とNPC両方の位置情報を計算します。関数名を変えるのにかなりの時間を有しそうだったのでそのままにしました。
 // Returns true if there are no animals in that coordinate, false otherwise
 function noAnimals(realX, realY, selfTileSize) {
     for (let index = 0; index < animalArr.length; index++) {
@@ -1026,10 +1029,6 @@ function noAnimals(realX, realY, selfTileSize) {
             <= (npcArr[index].npcInfo.tileSizeX / 2 + selfTileSize / 2) - 15) {
             return false;
         }
-        // else if (stage === 3
-        //     && dist(realX + offsetX, realY + offsetY, customerArr[index].x, customerArr[index].y) <= (kitchenTileSize)) {
-        //     return false;
-        // }
     }
     return true;
 }
@@ -1387,6 +1386,7 @@ function showFood(table, id) {
 /**
  * CLASSES
  */
+// クラス等（オブジェクト指向）
 class Player {
     constructor(x, y) {
         this.x = x;
@@ -1538,6 +1538,7 @@ class Player {
 
         }
 
+        // フレームアニメーション
         // frame animation
         if (this.walking) {
             this.pauseCounter--;
@@ -1642,6 +1643,7 @@ class Player {
 
         }
 
+        // フレームアニメーション
         // frame animation
         if (this.walking) {
             this.pauseCounter--;
@@ -1699,6 +1701,9 @@ class Plant {
     }
 }
 
+// Animal・NPCクラスについての補足：
+//      物理的にプレイヤーを通り抜けない機能・計算はクラス内で定義されている関数[noPlayer()・noAnimalsorPlayer()]内に存在します
+//      補足関数のnoAnimals()とnoCustomers()ではプレイヤーの位置を特定できないため、クラス内で定義をしました
 class Animal {
     constructor(arrayX, arrayY, animalName) {
         this.x = arrayX * worldTileSize;
@@ -1734,6 +1739,7 @@ class Animal {
         this.maxItemCoolDown = 60;
     }
 
+    // 物理チェック（自身の移動）
     // there are no animals or players at the place the animal is trying to move
     noAnimalsOrPlayer(realX, realY) {
         for (let index = 0; index < animalArr.length; index++) {
@@ -1873,6 +1879,7 @@ class Animal {
         }
     }
 
+    // ランダムな動作
     // Animals change direction and move randomly in four directions (or sleeps) after a certain amount of time
     // They check if the place they are trying to go is okay to go to, has constant speed
     // Also inclues frame animation
@@ -2025,7 +2032,9 @@ class Item1 {
     }
 }
 
-
+// NPCクラスについての補足：
+//      NPCの動きは特殊でA*探索アルゴリズミを使い地点A（現在地）から地点B（設定されるランダムな移動可能な目的地）へのルートを決めています。
+//      ルート確定後はそのルートを辿ります。
 class NPC {
     constructor(arrayX, arrayY, destX, destY, worldTileSize, mode) {
         this.x = arrayX * worldTileSize + worldTileSize / 2;
